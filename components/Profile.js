@@ -1,10 +1,12 @@
-import { View, Text ,StyleSheet,Alert, Image, Pressable } from 'react-native'
+import { View, Text ,StyleSheet,Alert, Image, Pressable ,ScrollView} from 'react-native'
 import React,{useState,useEffect} from 'react'
 import { auth, db } from '../Config/Firebase';
 import { Dimensions } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import { FontAwesome5 } from '@expo/vector-icons'; 
+import { getPixelSizeForLayoutSize } from 'react-native/Libraries/Utilities/PixelRatio';
+import ClockInInformation from './ClockInInformation';
 
 
 const profilePic = 'https://media.istockphoto.com/photos/headshot-portrait-of-smiling-male-employee-in-office-picture-id1309328823?b=1&k=20&m=1309328823&s=170667a&w=0&h=a-f8vR5TDFnkMY5poQXfQhDSnK1iImIfgVTVpFZi_KU='
@@ -12,12 +14,30 @@ const profilePic = 'https://media.istockphoto.com/photos/headshot-portrait-of-sm
 
 function Profile({navigation}){
  
-    const [activeTab, setActiveTab] = useState('clockIn')
+    const [activeTab, setActiveTab] = useState('clock-in')
+    const [clockinselected, setclockinSelected] = useState(true)
+    const [clockoutselected, setclockoutSelected] = useState(false)
 
  console.log({width:Dimensions.get('window').width,
  height:Dimensions.get('window').height
 
 })
+
+   //function to set clock in selected true
+   function clockinSelected (){
+    setclockinSelected(true)
+    setclockoutSelected(false)
+   
+   }
+
+   //function to set clock out selected true
+   function clockoutSelected(){
+    setclockinSelected(false)
+    setclockoutSelected(true)
+   
+   }
+
+   //logout function
     function logout(){
        auth.signOut().then(()=>{
           navigation.navigate('Login')
@@ -49,11 +69,16 @@ function Profile({navigation}){
            </View>
            <View style={styles.attendenceContainer}>
             <View style={styles.tabs}>
-                <Pressable onPress={()=>setActiveTab('clock-in')}>
-                <View><Text>Clock in</Text></View>
+                <Pressable onPress={()=>{setActiveTab('clock-in'), clockinSelected()}}>
+                    {
+                        clockinselected ?   <View style={styles.selected}><Text style={{color:'white'}}>Clock in</Text></View> :   <View style={styles.unselected}><Text>Clockin</Text></View>
+                    }
+              
                 </Pressable>
-             <Pressable onPress={()=>setActiveTab('clock-out')}>
-             <View><Text>Clock out</Text></View>
+             <Pressable onPress={()=>{setActiveTab('clock-out'),clockoutSelected()}}>
+             {
+                        clockoutselected?   <View style={styles.selected}><Text style={{color:'white'}}>Clock out</Text></View> :   <View style={styles.unselected}><Text>Clock out</Text></View>
+                    }
              </Pressable>
               
             </View>
@@ -61,7 +86,11 @@ function Profile({navigation}){
             </View>
             <View>
                  {
-                    activeTab ==='clock-in'? <Text>clock in</Text> : <Text>clock out</Text>
+                    activeTab ==='clock-in' ? 
+                  
+                       <ClockInInformation/>
+                 
+                    : <Text>clock out</Text> 
                  }
             </View>
         </>
@@ -117,6 +146,16 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-around',
         marginTop:30
+    },
+    selected:{
+          backgroundColor:'#4b97cb',
+          padding:10,
+          borderRadius:15
+    },
+    unselected:{
+        backgroundColor:'white',
+        padding:10,
+        borderRadius:15
     }
     
 
