@@ -25,8 +25,8 @@ const Login = ({navigation}) => {
            console.log(userCred)
           //  alert('signed in ')
            setIsloading(!isLoading)
-           navigation.navigate('landing, home')
-      }).catch((error)=>{
+           navigation.navigate('landing')
+      }).catch((error)=>{ 
        alert(error.message)
       })
  
@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
           position:'absolute',
         
           elevation: 3,
-          borderRadius:15
+          borderRadius:15,
+          
           
   },
   buttons:{
