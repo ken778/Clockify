@@ -1,36 +1,22 @@
-import { View,Text,Modal,ScrollView,KeyboardAvoidingView,ActivityIndicator, Pressable, Alert } from 'react-native'
-import React,{useState} from 'react'
-import { StyleSheet } from 'react-native';
-import {Dimensions} from 'react-native'
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Button from './Button';
-
+import { View,Text,Modal,ScrollView,KeyboardAvoidingView,ActivityIndicator, Pressable, Alert, StyleSheet } from 'react-native'
+import React,{useState,useEffect} from 'react'
+import { auth, db } from '../Config/Firebase';
+import { Dimensions } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
 
-const ClockInInformation = ({clock}) =>{
-   const [modalVisible, setModalVisible] = useState(false);
+const ProfileModal = () =>{
 
-   const alertActive = () =>{
-      alert('testing pressed')
-   }
-   const alertActive2 = () =>{
-      alert('testing2 pressed')
-   }
-
-  console.log(clock.length)
-
-
+    const [modalVisible, setModalVisible] = useState();
     return(
         <>
-   <View style={styles.centeredView}>
+    <View style={styles.centeredView}>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
+        visible={setModalVisible}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
@@ -66,29 +52,7 @@ const ClockInInformation = ({clock}) =>{
 
              
 
-              {
-               clock.map((res,index)=>
-                  index<4 &&
-               (
-                     <>
-                        <View style={styles.details}>
-                           <Text style={styles.info}>
-                             {res.date}
-                           </Text>
-                           <Text style={styles.info}>
-                              {res.icon}{res.time}
-                           </Text>
-
-                        </View>
-
-                        
-                    </>
-            
-                        
-           
-
-               ))
-             }
+             
               </ScrollView>
               
    
@@ -101,77 +65,15 @@ const ClockInInformation = ({clock}) =>{
       </Modal>
      
     </View>
-         
-              <View style={styles.headers}>
-                   <Text style={styles.headerText}>
-                        Date
-                   </Text>
-                   <Text  style={styles.headerText}>
-                        Time 
-                   </Text>
-                   
-              </View>
-             
-             {
-               clock.map((res,index)=>
-                  index<4 &&
-               (
-                     <>
-                        <View style={styles.details}>
-                           <Text style={styles.info}>
-                             {res.date}
-                           </Text>
-                           <Text style={styles.info}>
-                              {res.icon}{res.time}
-                           </Text>
-
-                        </View>
-
-                        
-                    </>
-            
-                        
-           
-
-               ))
-             }
-           
-          {
-            clock.length>=5 &&<Pressable  onPress={() => setModalVisible(true)}>
-            <View style={styles.moreButton}>
-             
-             <Text style={{color:'white', textAlign:'center'}}>More</Text></View>
-            </Pressable>
-          }
         
-
-           
-           
-             
-            
-              
-             
-              
-    
-          
-         
         </>
     )
 }
 
-export default ClockInInformation;
+export default ProfileModal;
 
 const styles = StyleSheet.create({
-    headers:{
-       display:'flex',
-       flexDirection:'row',
-       justifyContent:'space-around',
-       marginTop:10,
-       borderBottomWidth:2,
-       borderBottomColor:'black',
-       width: windowWidth*0.9,
-       alignSelf:'center',
-    },
+   
     Modalheaders:{
        display:'flex',
        flexDirection:'row',
