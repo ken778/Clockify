@@ -1,4 +1,4 @@
-import { View,Text,Modal,ScrollView,KeyboardAvoidingView,ActivityIndicator, Pressable, Alert, StyleSheet,Image } from 'react-native'
+import { View,Text,Modal,ScrollView,KeyboardAvoidingView,ActivityIndicator, Pressable, Alert, StyleSheet,Image, TextInput, TouchableOpacity } from 'react-native'
 import React,{useState,useEffect} from 'react'
 import { auth, db,storage } from '../Config/Firebase';
 import { Dimensions } from 'react-native';
@@ -12,25 +12,26 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileModal from './ProfileModal';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 
 const profilePic = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqjYWb_kZ7jZ_aCJJdFjLqxS-DBaGsJGxopg&usqp=CAU'
 
 
 function Profile({navigation,userInfo}){
 
- console.log('passed',userInfo)
+ console.log('passed now',userInfo[0])
     const [activeTab, setActiveTab] = useState('clock-in')
     const [clockinselected, setclockinSelected] = useState(true)
     const [clockoutselected, setclockoutSelected] = useState(false)
     const [imageUrl, setImage] = useState(
-      ''
+      userInfo[0].imageUrl
     );
    
  
-    const [name, setName] = useState(userInfo.name)
-    const [surname, setSurname] = useState(userInfo.surname)
-    const [email, setEmail] = useState(userInfo.email)
+    const [name, setName] = useState(userInfo[0].name)
+    const [surname, setSurname] = useState(userInfo[0].surname)
+    const [email, setEmail] = useState(userInfo[0].email)
+    const [image, setImageUri] = useState(userInfo[0].imageUrl)
     
     const [modalVisible, setModalVisible] = useState();
 
@@ -49,26 +50,21 @@ function Profile({navigation,userInfo}){
     }
   };
 
-  // const updateUser = async () => {
-  //   setIsLoading(true);
-  //   const storageRef = ref(
-  //     storage,
-  //     `/images/${Date.now()}imageUrl`
-  //   );
-  //   const response = await fetch(imageUrl);
-  // const blob = await response.blob();
+  const updateUser = async () => {
+      const userRef = doc(db, 'users', userInfo[0].id)
 
-  // await uploadBytesResumable(storageRef, blob).then((uploadTask)=>{
-  //   getDownloadURL(uploadTask.ref).then(async(url) => {
-     
-  //     console.log('the ul',url)
-     
-  // }).then(()=>{
-  //   alert('done');
-   
-  // })
-  // })
-  // };
+      const user = {
+        name:name,
+        surname:surname
+      }
+
+     await updateDoc(userRef,user).then(()=>{
+        alert('updated')
+      }).catch((error)=>{
+        alert(error.message)
+      })
+
+  };
 
   const uploadImage = async () => {
     const blob = await new Promise((resolve, reject) => {
@@ -270,9 +266,7 @@ function Profile({navigation,userInfo}){
                            <View>
                                <View style={styles.profilePic}>
                                       <Image style={styles.picture}
-                                       source={{
-                                        uri:imageUrl
-                                       }} 
+                                       source={{uri:image}} 
                                       />
                                       <Pressable onPress={pickImage}>
                                       <FontAwesome style={styles.cameraIcon} name="camera" size={24} color="black" />
@@ -281,13 +275,30 @@ function Profile({navigation,userInfo}){
                                </View>
                                
                            </View>
-                           <Pressable onPress={uploadImage}>
+
+                           {/* <Pressable onPress={uploadImage}>
                            <View><Text>update</Text></View>
                            </Pressable>
-                           
+                            */}
                           
 
-
+                          <View style={styles.userInputContainer}>
+                            <TextInput style={styles.userInput} 
+                              onChangeText={setName}
+                              value={name}
+                            placeholder='name'></TextInput>
+                            <TextInput style={styles.userInput}
+                            onChangeText={setSurname}
+                            value={surname}
+                            placeholder='surname '></TextInput>
+                           
+                          </View>
+                            <TouchableOpacity onPress={updateUser}>
+                            <View style={styles.moreButton}>
+             
+                             <Text style={{color:'white', textAlign:'center'}}>Update</Text></View>
+                            </TouchableOpacity>
+                         
 
                         </View>
                     </View>
@@ -316,10 +327,10 @@ function Profile({navigation,userInfo}){
                <Image
               style={{ width: 100, height: 100,  borderRadius:50, alignSelf:'center' }}
               source={{
-                 uri:userInfo.imageUrl
+                 uri:image
               }}
             />
-            <Text style={{alignSelf:'center', padding:10, fontSize:20, fontWeight:'bold'}}>{`${userInfo.name + ' ' + userInfo.surname  }`}</Text>
+            <Text style={{alignSelf:'center', padding:10, fontSize:20, fontWeight:'bold'}}>{`${name + ' ' + surname  }`}</Text>
                  
                </View>
            </View>
@@ -490,6 +501,32 @@ const styles = StyleSheet.create({
     marginLeft:110,
     marginTop:-20
 
- }
+ },
+ userInputContainer:{
+  width:windowWidth*0.8,
+ 
+  
+  alignSelf:'center',
+  marginTop:15,
+  padding:15
+ },
+ userInput:{
+    padding:10,
+    borderWidth:1,
+  borderColor:'#4b97cb',
+  marginTop:9,
+  borderRadius:15,
+   
+    
+    
+ },
+ moreButton:{
+  width:windowWidth*0.3,
+  backgroundColor:'#4b97cb',
+  padding:12,
+  marginTop:10,
+  alignSelf:'center',
+  borderRadius:15
+},
 
 })
