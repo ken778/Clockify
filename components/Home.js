@@ -31,7 +31,7 @@ const Home = ({navigation}) => {
       const userRef = collection(db,'users')
       const q = query(collection(db,'users'), where('userId', '==', user.uid))
       const data = await getDocs(q);
-      console.log(data)
+      console.log('home',data)
       data.forEach((results)=>{ 
         console.log(results.data())
         setInfo(results.data())
@@ -43,8 +43,8 @@ const Home = ({navigation}) => {
     getUserData()
     getClockInDetails()
   },[])
-
-
+    
+console.log('from home',userInfo)
   //getting clockin time
   const getClockInDetails = async() =>{
     const user = auth.currentUser;
